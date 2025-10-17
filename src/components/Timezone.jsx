@@ -1,17 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
+import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function Timezone() {
+  const [selectedZone, setSelectedZone] = useState(moment.tz.guess());
+  const timezones = moment.tz.names(); // gets IANA timezone names
+
   return (
     <div>
-      <select>
-        <option value="default" disabled>
-          Select an option
-        </option>
-        <input type="text" className="bg-black" />
-        <option value="option1">Option 1</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
-        <option value="option4">Option 4</option>
+      <select
+        className="bg-zinc-300 px-2 py-1"
+        id="timezone-select"
+        value={selectedZone}
+        onChange={(e) => setSelectedZone(e.target.value)}
+      >
+        {timezones.map((zone) => (
+          <option className="px-1 py-0.5" value={zone} key={zone}>
+            {zone}
+          </option>
+        ))}
       </select>
     </div>
   );

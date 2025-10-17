@@ -1,10 +1,17 @@
 import Timezone from "./Timezone";
 import User_Dropdown from "./User_Dropdown";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+
 function CreateEvents() {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const notify = () => toast("Event created successfully");
+
   return (
     <div className="bg-white px-4 py-2 rounded-lg text-sm flex-col gap-2">
       <div className="text-xl font-bold mb-3">Create Event</div>
-      <form action="" className="flex-col items-center gap-6 ">
+      <div className="flex-col items-center gap-6 ">
         <div className="mb-3">
           <label htmlFor="">Profiles</label>
           <User_Dropdown />
@@ -19,11 +26,10 @@ function CreateEvents() {
             <input
               type="date"
               className="w-[25vw] px-2 py-1 bg-zinc-200 rounded-lg cursor-pointer"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
             />
-            <input
-              type="time"
-              className="w-[5vw] px-2 py-1 bg-zinc-200 rounded-lg cursor-pointer"
-            />
+            <input type="time" name="" id="" />
           </div>
         </div>
         <div className="mb-3">
@@ -32,17 +38,21 @@ function CreateEvents() {
             <input
               type="date"
               className="w-[25vw] px-2 py-1 bg-zinc-200 rounded-lg cursor-pointer"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              min={startDate || undefined}
             />
-            <input
-              type="time"
-              className="w-[5vw] px-2 py-1 bg-zinc-200 rounded-lg cursor-pointer"
-            />
+            <input type="time" name="" id="" />
           </div>
         </div>
-        <button className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-400 text-white w-full cursor-pointer">
+        <button
+          onClick={notify}
+          className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-400 text-white w-full cursor-pointer"
+        >
           Create Event
         </button>
-      </form>
+      </div>
+      <ToastContainer position="bottom-right"></ToastContainer>
     </div>
   );
 }
