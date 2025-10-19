@@ -5,6 +5,7 @@ import Events from "../components/Events";
 import Cards from "../components/Cards";
 
 function Home() {
+  document.title = "Event Management";
   return (
     <div className="w-full h-[100vh] bg-zinc-200 flex-col items-center justify-center px-[10vw]  py-5">
       <div className="flex items-center justify-between text-4xl font-bold ">

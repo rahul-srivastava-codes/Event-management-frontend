@@ -1,118 +1,138 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addUser } from "../Redux/Reducers/UserSlice";
+import { addusername } from "../Redux/Reducers/UsernameSlice";
 
 function User_Dropdown() {
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isAddingUser, setAddingUser] = useState(false);
-  const [username, setUsername] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setselected] = useState(false);
+  const [useradd, setuseradd] = useState(false);
   const [search, setsearch] = useState("");
-  const [selecteduser, setselecteduser] = useState("Select current profile");
+  const [userdetail, setuserdetail] = useState("");
   const dropdownRef = useRef(null);
-  const users = useSelector((state) => state.user.value); // get users from Redux
+  const user = useSelector((state) => state.user.value);
+  const username = useSelector((state) => state.username.value);
   const dispatch = useDispatch();
 
-  // Close dropdown when clicked outside
   useEffect(() => {
+    // The function refers to hovering and how it disappears once we click somewhere else
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-        setAddingUser(false);
+        setIsOpen(false);
+        setselected(false);
       }
     }
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isDropdownOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  function handleAddUser() {
-    if (username.trim()) {
-      dispatch(addUser(username.trim())); // add user to Redux
-      setUsername("");
-      setAddingUser(false);
-    }
+  const handleAddClick = () => {
+    setIsOpen(true);
+    setselected(true);
+  };
+
+  function handlesubmit() {
+    setuseradd(!useradd);
+    dispatch(addUser(userdetail.toLowerCase()));
+    setuserdetail("");
   }
 
   return (
-    <div className="relative text-sm" ref={dropdownRef}>
-      <button
-        className="bg-blue-300 w-[10vw] px-2 rounded-lg flex items-start justify-start"
-        onClick={() => setDropdownOpen(!isDropdownOpen)}
-      >
-        {selecteduser}
+    <div
+      className="relative text-sm bg-blue-400 rounded-lg px-2 py-1 "
+      ref={dropdownRef}
+    >
+      <button onClick={handleAddClick} className="cursor-pointer">
+        {username}
       </button>
-      {isDropdownOpen && (
-        <div className="w-[14vw] rounded-lg h-[20vh] overflow-scroll shadow bg-white absolute px-4 py-2 flex flex-col  justify-between ">
-          <div>
-            <input
-              type="text"
-              className="bg-zinc-100 rounded-lg "
-              placeholder="Search User"
-              value={search}
-              onChange={(e) => setsearch(e.target.value)}
-            />
-            {users.length > 0 ? (
-              <div className="">
-                {search.length > 0
-                  ? users
-                      .filter((u) =>
-                        u.toLowerCase().includes(search.toLowerCase())
-                      )
-                      .map((u, i) => (
-                        <button
-                          onClick={() => setselecteduser(u)}
-                          className="px-1 py-0.5 mt-1 mb-1 cursor-pointer w-full rounded-lg text-white bg-blue-400"
-                          key={i}
-                        >
-                          {u}
-                        </button>
-                      ))
-                  : users.map((u, i) => (
+      <div className="">
+        {selected && isOpen ? (
+          <div className="absolute w-[15vw] h-[30vh] rounded-lg shadow bg-white px-4 top-8 -left-2 py-2">
+            <div>
+              {/* this input is for search */}
+              <input
+                type="text"
+                className="bg-zinc-100 px-2 py-1 rounded-lg"
+                value={search}
+                onChange={(e) => setsearch(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col justify-between items-center">
+              <div className="w-full overflow-scroll    ">
+                {user.length > 0 ? (
+                  <div>
+                    {search.length > 0 ? (
+                      <div>
+                        {user
+                          .filter((u) =>
+                            u.toLowerCase().includes(search.toLowerCase())
+                          )
+                          .map((u, i) => (
+                            <button
+                              className="text-black bg-blue-200 cursor-pointer w-full mt-2 rounded-lg px-2 hover:bg-blue-400"
+                              key={i}
+                              onClick={() => dispatch(addusername(u))}
+                            >
+                              {u}
+                            </button>
+                          ))}
+                      </div>
+                    ) : (
+                      <div>
+                        {user.map((u, i) => (
+                          <button
+                            className="text-black bg-blue-200 cursor-pointer w-full mt-2 rounded-lg px-2 hover:bg-blue-400"
+                            key={i}
+                            onClick={() => dispatch(addusername(u))}
+                          >
+                            {u}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>No users found</>
+                )}
+              </div>
+              <div className="flex items-end justify-center">
+                {useradd ? (
+                  <div className="flex flex-col justify-between items-center">
+                    <div className="flex  justify-between items-end">
+                      <input
+                        type="text"
+                        className="px-2 py-1 rounded-lg bg-zinc-100 "
+                        placeholder="Add user"
+                        value={userdetail}
+                        onChange={(e) => setuserdetail(e.target.value)}
+                      />
+                    </div>
+                    <div>
                       <button
-                        onClick={() => setselecteduser(u)}
-                        className="px-1 py-0.5 mt-1 mb-1 cursor-pointer w-full rounded-lg text-white bg-blue-400"
-                        key={i}
+                        onClick={handlesubmit}
+                        className="px-2 py-1 rounded-lg bg-zinc-100 cursor-pointer"
                       >
-                        {u}
+                        Add
                       </button>
-                    ))}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setuseradd(!useradd)}
+                    className="px-2  py-2  rounded-lg bg-zinc-100 w-full cursor-pointer"
+                  >
+                    Add user
+                  </button>
+                )}
               </div>
-            ) : (
-              <div>No users found</div>
-            )}
+            </div>
           </div>
-          <div>
-            {isAddingUser ? (
-              <div className="flex items-center justify-between gap-1">
-                <input
-                  type="text"
-                  className="px-1 py-0.5 bg-zinc-100 w-25 text-mono rounded-lg"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleAddUser();
-                  }}
-                />
-                <button
-                  onClick={handleAddUser}
-                  className="cursor-pointer bg-yellow-200 px-2 py-1 w-full rounded-lg"
-                >
-                  Add
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setAddingUser(true)}
-                className="cursor-pointer bg-yellow-200 px-2 py-1 w-full rounded-lg"
-              >
-                Add user
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }
